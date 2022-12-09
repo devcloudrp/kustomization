@@ -1,0 +1,46 @@
+name: commit to github
+
+on:
+  workflow_dispatch
+
+    
+env:
+  templateName1: "base/kustomization.template"           
+  templateName: "./overlays/patch.template"
+  fileName1: "base/kustomization"
+  fileName: "./overlays/patch"
+  namePrefix: "evolve4-" 
+  labelName: "evolve4"
+  databaseName: "evolve4"
+  domainName:  "evolve4.sreyo.in"
+  serviceName:  "evolve4-customer-service.default.svc.cluster.local"
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  Job1:
+    name: update files
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: Checkout
+       uses: actions/checkout@v2
+       with:
+         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+         fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+     - name: Create local changes
+       run: |
+        sed "s|namePrefix_name|$namePrefix|g; " $templateName1.yaml > $fileName1.yaml
+        sed "s|labelName|$labelName|g; s|domainName|$domainName|g; s|serviceName|$serviceName|g; s|databaseName|$databaseName|g;" $templateName.yaml > $fileName.yaml
+        
+     - name: Commit files
+       run: |
+        git config --local user.email "devcloudrp@sreyo.com"
+        git config --local user.name "devcloudrp"
+        git commit -m "Add changes" -a
+     - name: Push changes
+       uses: ad-m/github-push-action@master
+       with:
+        github_token: ${{ secrets.PERSONAL_TOKEN}}
+        branch: main
+    

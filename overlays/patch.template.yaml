@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-deployment
+  labels:
+    app: labelName
+spec:
+  selector:
+    matchLabels:
+      app: labelName
+  template:
+    metadata:
+      labels: # labels to select/identify the deployment
+        app: labelName
+    spec:     # pod spec
+      containers: 
+      - name: customer
+        ports:
+        - containerPort: 1337
+          $patch: delete
+        - containerPort: containerPortVal  
+        env:
+        - name: DATABASE_NAME
+          value: "databaseName"     
+                  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-service
+  labels:
+    app: labelName
+spec:
+  selector:
+    app: labelName
+
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: customer-vs
+spec:
+  hosts: 
+    - domainName
+  http:
+    - route:
+        - destination:
+            host: serviceName
+            port:
+              number: portVal
