@@ -3,15 +3,15 @@ kind: Deployment
 metadata:
   name: customer-deployment
   labels:
-    app: evolve2
+    app: evolve4
 spec:
   selector:
     matchLabels:
-      app: evolve2
+      app: evolve4
   template:
     metadata:
       labels: # labels to select/identify the deployment
-        app: evolve2
+        app: evolve4
     spec:     # pod spec
       containers: 
       - name: customer
@@ -21,7 +21,7 @@ spec:
         - containerPort: containerPortVal  
         env:
         - name: DATABASE_NAME
-          value: "evolve2"     
+          value: "evolve4"     
                   
 ---
 apiVersion: v1
@@ -29,10 +29,10 @@ kind: Service
 metadata:
   name: customer-service
   labels:
-    app: evolve2
+    app: evolve4
 spec:
   selector:
-    app: evolve2
+    app: evolve4
 
 
 ---
@@ -42,10 +42,10 @@ metadata:
   name: customer-vs
 spec:
   hosts: 
-    - evolve2.sreyo.in
+    - evolve4.sreyo.in
   http:
     - route:
         - destination:
-            host: evolve2-customer-service.default.svc.cluster.local
+            host: evolve4-customer-service.default.svc.cluster.local
             port:
               number: portVal
